@@ -8,8 +8,14 @@ import (
 	"github.com/sshaparenko/donation-service/internal/utils"
 )
 
+/*
+DEFAULT_PORT stores the default port value
+*/
 const DEFAULT_PORT = "8080"
 
+/*
+NewFilberApp creates a new fiber App and sets up the routes for it
+*/
 func NewFilberApp() *fiber.App {
 	var app *fiber.App = fiber.New()
 	routes.SetupRoutes(app)
