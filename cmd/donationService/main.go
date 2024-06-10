@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/sshaparenko/donation-service/internal/routes"
@@ -30,5 +31,7 @@ func main() {
 		PORT = DEFAULT_PORT
 	}
 
-	app.Listen(fmt.Sprintf(":%s", PORT))
+	if err := app.Listen(fmt.Sprintf(":%s", PORT)); err != nil {
+		log.Fatalf("Error starting server: %v", err)
+	}
 }
