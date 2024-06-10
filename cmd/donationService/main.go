@@ -11,7 +11,7 @@ import (
 /*
 DEFAULT_PORT stores the default port value
 */
-const DEFAULT_PORT = "8080"
+const DEFAULT_PORT = "8081"
 
 /*
 NewFilberApp creates a new fiber App and sets up the routes for it
