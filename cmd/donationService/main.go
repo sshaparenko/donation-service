@@ -3,35 +3,33 @@ package main
 import (
 	"fmt"
 	"log"
+	"net/http"
+	"os"
+	"runtime"
 
-	"github.com/gofiber/fiber/v2"
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/render"
 	"github.com/sshaparenko/donation-service/internal/routes"
-	"github.com/sshaparenko/donation-service/internal/utils"
 )
 
-/*
-DEFAULT_PORT stores the default port value
-*/
-const DEFAULT_PORT = "8081"
-
-/*
-NewFilberApp creates a new fiber App and sets up the routes for it
-*/
-func NewFilberApp() *fiber.App {
-	var app *fiber.App = fiber.New()
-	routes.SetupRoutes(app)
-	return app
-}
+const DEFAULT_PORT string = "8080"
 
 func main() {
-	var app *fiber.App = NewFilberApp()
+	r := chi.NewRouter()
+	r.Use(middleware.Logger)
+	r.Use(middleware.Recoverer)
+	r.Use(render.SetContentType(render.ContentTypeJSON))
 
-	var PORT string = utils.GetValue("PORT")
-	if PORT == "" {
-		PORT = DEFAULT_PORT
-	}
+	routes.SetupRotes(r)
+	printStrtupMessages()
 
-	if err := app.Listen(fmt.Sprintf(":%s", PORT)); err != nil {
-		log.Fatalf("Error starting server: %v", err)
-	}
+	http.ListenAndServe(fmt.Sprintf(":%s", DEFAULT_PORT), r)
+}
+
+func printStrtupMessages() {
+	log.Printf("Starting Donation Service at port %s", DEFAULT_PORT)
+	log.Printf("Handlers: ")
+	log.Printf("Threads: %d", runtime.GOMAXPROCS(0))
+	log.Printf("PID: %d", os.Getpid())
 }
