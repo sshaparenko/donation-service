@@ -5,7 +5,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"sync"
 
 	"github.com/go-chi/render"
 	"github.com/gorilla/sessions"
@@ -14,7 +13,6 @@ import (
 	"golang.org/x/oauth2"
 )
 
-var mutex sync.Mutex
 var ch = make(chan *sessions.Session, 5)
 var store = sessions.NewCookieStore([]byte(os.Getenv("SESSION_KEY")))
 
@@ -39,7 +37,7 @@ func SignIn(w http.ResponseWriter, r *http.Request) {
 func SignInWithProvider(w http.ResponseWriter, r *http.Request) {
 	verifier := oauth2.GenerateVerifier()
 	url := generateUrl(r, verifier)
-	go createSession(w, r, verifier)
+	createSession(w, r, verifier)
 	http.Redirect(w, r, url, http.StatusSeeOther)
 }
 
@@ -50,9 +48,6 @@ func generateUrl(r *http.Request, verifier string) string {
 }
 
 func createSession(w http.ResponseWriter, r *http.Request, verifier string) {
-	mutex.Lock()
-	defer mutex.Unlock()
-
 	session, _ := store.Get(r, "session")
 	session.Values["verifier"] = verifier
 	session.Options = &sessions.Options{
